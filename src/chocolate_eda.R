@@ -30,7 +30,25 @@ summary(chocolate)
 # most_memorable_characteristics: brief descriptions of memorable characteristics of the bars.
 # rating: rating: ordinal number ranging 1-4 with 0.25 increments describing the flavor rating of the bar.
 
-# Show density plot of rating to get an overview of the sample's rating destribution:
+# Questions: 
+# 1. What country/countries are manufacturing the highest rating chocolate bars?
+# 2. What country/countries are growing the highest rating beans? 
+# 3. What is the trend between rating and cocoa percent?
+# 4. What ingredients are found most among the highest rating chocolate bars?
+# 5. Does the time in which the review was made affect the rating? 
+
+# questions for Rick: 
+# presentation format
+# expected number of slides/plots 
+# using map graph from external source
+# type of depth into external data 
+
+
+
+# Population: World-wide Dark Chocolate Bars
+# Sample: Data gathered by flavorsofcacao.com 
+
+# Show density plot of rating to get an overview of the sample's rating distribution:
 ggplot(chocolate, aes(rating)) + 
   geom_density()
 # The density plot of the chocolate ratings shows a negative skew with a lot of humps implying further investigating is required.
@@ -53,12 +71,21 @@ chocolate %>%
   ggplot(aes(y = as.character(rating), x = cocoa_percent)) +
   geom_boxplot()
 
-# Put the ingredients into the equation: 
+#showing all the information regarding cocoa percentage and rating together
 chocolate %>% 
-  group_by(ingredients) %>% 
-  ggplot(aes(x = as.character(rating), y = cocoa_percent)) +
-  geom_point() +
-  facet_wrap(vars(ingredients), scales = 'free')
+  group_by(rating) %>% 
+  ggplot(aes(y = as.character(rating),  x = cocoa_percent, fill = stat(quantile))) + 
+  stat_density_ridges(quantile_lines = FALSE,
+                      calc_ecdf = TRUE,
+                      geom = "density_ridges_gradient") +
+  scale_fill_brewer(name = "")
+
+# Put the ingredients into the equation: 
+# chocolate %>% 
+#   group_by(ingredients) %>% 
+#   ggplot(aes(x = as.character(rating), y = cocoa_percent)) +
+#   geom_point() +
+#   facet_wrap(vars(ingredients), scales = 'free')
 # The number of observations per unique set of ingredients vary. therefore, to analyze any trend we will only use the top eight sets. 
 names(sort(table(chocolate$ingredients), decreasing = TRUE))[1:8] -> top_ingredients
 
@@ -81,13 +108,12 @@ chocolate %>%
 chocolate %>% 
   filter(ingredients %in% top_ingredients) %>% 
   group_by(ingredients) %>% 
-  ggplot(aes(y = ingredients,  x = rating, color = mean(cocoa_percent))) + 
-  geom_density_ridges() + 
-  scale_color_continuous()
+  ggplot(aes(y = ingredients,  x = rating, fill = cocoa_percent)) + 
+  geom_density_ridges() 
 # need to incorporate cocoa percent into graph
 
 # rating vs company location 
-names(sort(table(chocolate$company_location), decreasing = TRUE))[1:20] -> top_countries
+names(sort(table(chocolate$company_location), decreasing = TRUE))[1:10] -> top_countries
 
 chocolate %>% 
   ggplot(aes(x = rating, y = company_location)) +
@@ -97,13 +123,13 @@ chocolate %>%
   filter(company_location %in% top_countries) %>% 
   ggplot(aes(rating)) +
   geom_histogram() + 
-  facet_wrap(vars(company_location), scales = 'free')
+  facet_wrap(vars(company_location))
 # the histogram shows that the top chocolate bar producing country in terms of production and rating is the united states. 
 # moreover, the trend for all countries is somewhat normal 
 # ask rick about replicating the map graphs from the article 
 
 # rating vs country of bean origin
-names(sort(table(chocolate$country_of_bean_origin), decreasing = TRUE))[1:20] -> top_bean_countries
+names(sort(table(chocolate$country_of_bean_origin), decreasing = TRUE))[1:10] -> top_bean_countries
 
 chocolate %>% 
   ggplot(aes(x = rating, y = country_of_bean_origin)) +
@@ -116,3 +142,26 @@ chocolate %>%
   facet_wrap(vars(country_of_bean_origin))
 # this histogram is harder to interpret than the previous one, however we can see that the top bean producing countries in terms of ratings are Dominican Republic?, Ecuador, Madagascar, Peru, and Venezuela
 # further investigation is required. 
+# plot histogram of top ten countries and their chocolate rating 
+top_rating <- seq(3,4,0.25)
+chocolate %>%  
+  filter(country_of_bean_origin %in% top_bean_countries,
+         rating %in% top_rating) %>% 
+  group_by(rating) %>% 
+  ggplot(aes(country_of_bean_origin, fill = country_of_bean_origin)) +
+  geom_bar() +
+  theme(axis.text.x=element_blank()) +
+  facet_wrap(vars(rating))
+    
+
+
+# Show relationship between rating date and rating itself.
+chocolate %>% 
+  group_by(rating) %>% 
+  ggplot(aes(y = as.character(rating),  x = review_date, fill = stat(quantile))) + 
+  stat_density_ridges(quantile_lines = FALSE,
+                      calc_ecdf = TRUE,
+                      geom = "density_ridges_gradient") +
+  scale_fill_brewer(name = "")
+# As shown in the density ridges, we can see that the production of low rating chocolate bars decreased drastically with time. 
+
