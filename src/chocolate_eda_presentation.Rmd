@@ -154,6 +154,7 @@ H_0: 70.25 - mew = 0
 X_bar ~ N(70.70, (3.37^2)/112)
 
 t_stat = (x_bar - mew_0)/SEM = (-1.41, 1.41)
+
 p = 0.159 -> Cannot Reject Null Hypothesis
 
 
