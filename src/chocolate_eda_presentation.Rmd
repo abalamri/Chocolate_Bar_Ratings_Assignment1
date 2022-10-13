@@ -14,6 +14,7 @@ library(GGally)
 library(ggridges)
 # Read the data 
 chocolate <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-01-18/chocolate.csv')
+candy_data <- read_csv("../data/candy_data.csv")
 
 # Change format of some columns
 chocolate$cocoa_percent <- gsub("%","",as.character(chocolate$cocoa_percent))
@@ -25,9 +26,9 @@ chocolate$cocoa_percent <- as.numeric(chocolate$cocoa_percent)
 
 - Exploratory Data Analysis.
 
-- Key investigations results from the data.
+- External Data Set Analysis.  
 
-- Takeaways from the dataset backed by visualizations and/or tables. 
+- Key investigations results from the data.
 
 ## Introduction 
 
@@ -35,6 +36,20 @@ Chocolate is the most popular candy in the world. The world consumption is estim
 
 This dataset contains expert ratings of over 1,700 individual chocolate bars, along with other information.
 
+## Data Summary
+This rating were compiled by Brady Belinsky, founding member of the Manhattan chocolate society
+
+- Data collection duration  2006-2021
+
+- From 580 company
+
+- 67 different country
+
+The dataset contains 2530 entry each one has 10 attribute list as following:
+
+- Numeric: Ref, Review Year, Cocoa Percent, Rating.
+
+- Character: Company Name, Company Location, Bean Origin, Bar Name, Ingredients, Characteristic
 
 ## Data Table
 ```{r echo=FALSE}
@@ -43,26 +58,6 @@ chocolate %>%
   datatable(options = list(pageLength = 7))
 ```
 
-## Column Summary
-The dataset contains 2530 entry each one has 10 attribute list as following:
-
-- Ref
-
-- Company Name
-
-- Company Location
-
-- Review Year
-
-- Bean Origin
-
-- Bar Name  
-
-- Cocoa Percent
-
-- Ingredients
-
-- Characteristic 
 
 ## Flavors of Cacao Rating System
 
@@ -150,13 +145,13 @@ Need to fill this slide.
 
 ## Most Used Ingredients Rating
 ```{r, echo=FALSE}
-names(sort(table(chocolate$ingredients), decreasing = TRUE))[1:8] -> top_ingredients
+names(sort(table(chocolate$ingredients), decreasing = TRUE))[1:4] -> top_ingredients
 
 # plot top ingredients and their cocoa percent and rating graphs:
 chocolate %>% 
   filter(ingredients %in% top_ingredients) %>% 
-  ggplot(aes(x = cocoa_percent, y = as.character(rating))) +
-  geom_point() +
+  ggplot(aes(x = as.character(rating))) +
+  geom_bar() +
   facet_wrap(vars(ingredients))
 ```
 
@@ -172,3 +167,33 @@ chocolate %>%
   scale_fill_brewer()
 ```
 
+## External Data Set 
+Main goal: Investigate whether the high ranked candies contain chocolate or not.
+
+The dataset contains 85 entries and 13 variables listed as follows:
+
+- Logical: chocolate, fruity, caramel, peanutalmondy, nougat, crispedricewafer, hard, bar, pluribus
+- Continuous: sugarpercent, pricepercent, winpercent
+- Character: competitorname
+
+## Table 
+```{r, echo=FALSE}
+candy_data %>%
+  arrange(-winpercent) %>% 
+  select(competitorname, winpercent, chocolate) %>% 
+  datatable(options = list(pageLength = 7))
+```
+
+## Take Aways
+
+- Rating Density: Negative skew, median = 3.25.
+
+- Highest Rating Company Location: USA for the win? 
+
+- Highest Rating Bean Origin Location: Venezuela and Peru lead the race with Dominican Republic slightly behind. 
+
+- Cocoa Percentage Density: Top rating bar have cocoa percent between 60 and 80. 
+
+- Most Used Ingredients Rating: Beans, sugar, and cocoa butter make up most bars. 
+
+- Rating Density Based on Date: Less/No low rating bars produced recently. 

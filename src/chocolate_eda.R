@@ -87,13 +87,13 @@ chocolate %>%
 #   geom_point() +
 #   facet_wrap(vars(ingredients), scales = 'free')
 # The number of observations per unique set of ingredients vary. therefore, to analyze any trend we will only use the top eight sets. 
-names(sort(table(chocolate$ingredients), decreasing = TRUE))[1:8] -> top_ingredients
+names(sort(table(chocolate$ingredients), decreasing = TRUE))[1:5] -> top_ingredients
 
 # plot top ingredients and their cocoa percent and rating graphs:
 chocolate %>% 
   filter(ingredients %in% top_ingredients) %>% 
-  ggplot(aes(x = cocoa_percent, y = as.character(rating))) +
-  geom_point() +
+  ggplot(aes(x = as.character(rating))) +
+  geom_bar() +
   facet_wrap(vars(ingredients))
 # The top eight combination of ingredients 
 
