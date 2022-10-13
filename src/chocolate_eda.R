@@ -164,4 +164,7 @@ chocolate %>%
                       geom = "density_ridges_gradient") +
   scale_fill_brewer()
 # As shown in the density ridges, we can see that the production of low rating chocolate bars decreased drastically with time. 
+# hypothesis Test: 
 
+  
+  
