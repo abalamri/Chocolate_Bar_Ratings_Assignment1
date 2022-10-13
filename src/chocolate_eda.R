@@ -78,7 +78,7 @@ chocolate %>%
   stat_density_ridges(quantile_lines = FALSE,
                       calc_ecdf = TRUE,
                       geom = "density_ridges_gradient") +
-  scale_fill_brewer(name = "")
+  scale_fill_brewer(name = "") 
 
 # Put the ingredients into the equation: 
 # chocolate %>% 
@@ -150,9 +150,9 @@ chocolate %>%
   group_by(rating) %>% 
   ggplot(aes(country_of_bean_origin, fill = country_of_bean_origin)) +
   geom_bar() +
-  theme(axis.text.x=element_blank()) +
-  facet_wrap(vars(rating))
-    
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x = element_blank()) +
+  facet_wrap(vars(rating)) 
 
 
 # Show relationship between rating date and rating itself.
@@ -162,6 +162,6 @@ chocolate %>%
   stat_density_ridges(quantile_lines = FALSE,
                       calc_ecdf = TRUE,
                       geom = "density_ridges_gradient") +
-  scale_fill_brewer(name = "")
+  scale_fill_brewer()
 # As shown in the density ridges, we can see that the production of low rating chocolate bars decreased drastically with time. 
 

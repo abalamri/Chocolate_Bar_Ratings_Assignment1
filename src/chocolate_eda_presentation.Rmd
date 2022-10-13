@@ -1,33 +1,174 @@
 ---
-title: "chocolate_eda_presentation"
-output: ioslides_presentation
+title: "Chocolate Bar Rating"
+output: 
+  ioslides_presentation:
+  widescreen: true
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, echo=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+# initialize libraries 
+library(tidyverse)
+library(DT)
+library(GGally)
+library(ggridges)
+# Read the data 
+chocolate <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-01-18/chocolate.csv')
+
+# Change format of some columns
+chocolate$cocoa_percent <- gsub("%","",as.character(chocolate$cocoa_percent))
+chocolate$cocoa_percent <- as.numeric(chocolate$cocoa_percent)
 ```
 
-## R Markdown
+## Table of Content: 
+- Introduce the dataset and scenario.
 
-This is an R Markdown presentation. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+- Exploratory Data Analysis.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
+- Key investigations results from the data.
 
-## Slide with Bullets
+- Takeaways from the dataset backed by visualizations and/or tables. 
 
-- Bullet 1
-- Bullet 2
-- Bullet 3
+## Introduction 
 
-## Slide with R Output
+Chocolate is the most popular candy in the world. The world consumption is estimated to be at least 7.2 mill metric tons/year, so chocolate has a strong business market. However, not all chocolate bars are created equal.
 
-```{r cars, echo = TRUE}
-summary(cars)
+This dataset contains expert ratings of over 1,700 individual chocolate bars, along with other information.
+
+
+## Data Table
+```{r echo=FALSE}
+chocolate %>% 
+  select(company_location, country_of_bean_origin, cocoa_percent, rating) %>%
+  datatable(options = list(pageLength = 7))
 ```
 
-## Slide with Plot
+## Column Summary
+The dataset contains 2530 entry each one has 10 attribute list as following:
 
-```{r pressure}
-plot(pressure)
+- Ref
+
+- Company Name
+
+- Company Location
+
+- Review Year
+
+- Bean Origin
+
+- Bar Name  
+
+- Cocoa Percent
+
+- Ingredients
+
+- Characteristic 
+
+## Flavors of Cacao Rating System
+
+
+- 5= Elite (Transcending beyond the ordinary limits)
+
+- 4= Premium (Superior flavor development, character and style)
+
+- 3= Satisfactory(3.0) to praiseworthy(3.75) (well made with special qualities)
+
+- 2= Disappointing (Passable but contains at least one significant flaw)
+
+- 1= Unpleasant (mostly unpalatable)
+
+## Data Quality
+
+- Missing Data :87 missing value (all under ingredients)
+
+- Inconsistency : some values inconsistent (combined country and bar names)
+
+- Cocoa Percent is a character, not a numeric value, percent sign removed
+
+- Check the names and remove the spaces and line breaks 
+
+## Questions Navigating Our Analysis
+
+- What country/countries are manufacturing the highest-rating chocolate bars?
+
+- What country/countries are growing the highest-rating beans? 
+
+- What is the trend between the rating and cocoa percentage?
+
+- What ingredients are found most among the highest-rating chocolate bars?
+
+- Does the time in which the review was made affect the rating? 
+
+## Rating Density Plot
+```{r, echo=FALSE}
+ggplot(chocolate, aes(rating)) + 
+  geom_density()
+```
+
+## Highest Rating Company Location 
+```{r, echo=FALSE}
+names(sort(table(chocolate$company_location), decreasing = TRUE))[1:10] -> top_countries
+top_rating <- seq(3,4,0.25)
+chocolate %>%  
+  filter(company_location %in% top_countries,
+         rating %in% top_rating) %>% 
+  group_by(rating) %>% 
+  ggplot(aes(company_location, fill = company_location)) +
+  geom_bar() +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x = element_blank()) +
+  facet_wrap(vars(rating)) 
+```
+
+## Highest Rating Bean Origin Loation
+```{r, echo=FALSE}
+names(sort(table(chocolate$country_of_bean_origin), decreasing = TRUE))[1:10] -> top_bean_countries
+chocolate %>%  
+  filter(country_of_bean_origin %in% top_bean_countries,
+         rating %in% top_rating) %>% 
+  group_by(rating) %>% 
+  ggplot(aes(country_of_bean_origin, fill = country_of_bean_origin)) +
+  geom_bar() +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x = element_blank()) +
+  facet_wrap(vars(rating)) 
+```
+
+## Cocoa% Rating Densities 
+```{r, echo=FALSE}
+chocolate %>% 
+  group_by(rating) %>% 
+  ggplot(aes(y = as.character(rating),  x = cocoa_percent, fill = stat(quantile))) + 
+  stat_density_ridges(quantile_lines = FALSE,
+                      calc_ecdf = TRUE,
+                      geom = "density_ridges_gradient") +
+  scale_fill_brewer(name = "") 
+```
+
+## Hypothesis Test
+Need to fill this slide.
+
+## Most Used Ingredients Rating
+```{r, echo=FALSE}
+names(sort(table(chocolate$ingredients), decreasing = TRUE))[1:8] -> top_ingredients
+
+# plot top ingredients and their cocoa percent and rating graphs:
+chocolate %>% 
+  filter(ingredients %in% top_ingredients) %>% 
+  ggplot(aes(x = cocoa_percent, y = as.character(rating))) +
+  geom_point() +
+  facet_wrap(vars(ingredients))
+```
+
+
+## Rating Density Based on Date 
+```{r, echo=FALSE}
+chocolate %>% 
+  group_by(rating) %>% 
+  ggplot(aes(y = as.character(rating),  x = review_date, fill = stat(quantile))) + 
+  stat_density_ridges(quantile_lines = FALSE,
+                      calc_ecdf = TRUE,
+                      geom = "density_ridges_gradient") +
+  scale_fill_brewer()
 ```
 
