@@ -115,7 +115,7 @@ chocolate %>%
   facet_wrap(vars(rating)) 
 ```
 
-## Highest Rating Bean Origin Loation
+## Highest Rating Bean Origin Location
 ```{r, echo=FALSE}
 names(sort(table(chocolate$country_of_bean_origin), decreasing = TRUE))[1:10] -> top_bean_countries
 chocolate %>%  
