@@ -140,24 +140,6 @@ chocolate %>%
   scale_fill_brewer(name = "") 
 ```
 
-## Hypothesis Test
-Population: 4 rated chocolates. 
-
-H_0: 70.25 - mew = 0
-
-- Sample (n): 112
-
-- Mean (x_bar): 70.70
-
-- Standard deviation (s): 3.37
-
-X_bar ~ N(70.70, (3.37^2)/112)
-
-t_stat = (x_bar - mew_0)/SEM = (-1.41, 1.41)
-
-p = 0.159 -> Cannot Reject Null Hypothesis
-
-
 ## Most Used Ingredients Rating
 ```{r, echo=FALSE}
 names(sort(table(chocolate$ingredients), decreasing = TRUE))[1:4] -> top_ingredients
