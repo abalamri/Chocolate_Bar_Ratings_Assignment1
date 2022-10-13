@@ -24,8 +24,9 @@ candy_data %>%
   print(n=20)
 
 
-#The top 12 ranked candies for Halloween contain chocolate
-#All the candies that got 70% or above contain chocolate 
+#The top 10 ranked candies for Halloween contain chocolate
+#All the candies that got 70% or above of winpercent contain chocolate 
+#Seven of the top 10 ranked candies are from U.S.A which supports the information that we got from Chocolate Bar Ratings Dataset
 
 
 
